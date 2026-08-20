@@ -1,0 +1,579 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian Credit, Portfolio Risk Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{
+  --ground:#F6F7F9; --panel:#FFFFFF; --edge:#E2E7EC; --track:#EDF0F3;
+  --ink:#16232E; --muted:#5C7183; --dim:#8497A5;
+  --ok:#17806A; --warn:#B57812; --bad:#C0392B; --gate:#B57812;
+  --shadow:0 1px 2px rgba(22,35,46,.05), 0 1px 8px rgba(22,35,46,.04);
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);
+     -webkit-font-smoothing:antialiased;padding:28px 26px 48px;line-height:1.55}
+.wrap{max-width:1220px;margin:0 auto}
+a{color:inherit}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+         color:var(--dim);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.eyebrow .tag{border:1px solid var(--edge);background:var(--panel);padding:3px 8px;border-radius:3px;color:var(--muted)}
+h1{font-family:var(--display);font-size:clamp(27px,4.3vw,42px);font-weight:800;
+   letter-spacing:-.028em;line-height:1.05;margin:13px 0 8px;max-width:20ch}
+.sub{color:var(--muted);font-size:13.5px;max-width:66ch}
+.rule{height:1px;background:var(--edge);margin:24px 0 22px}
+.kpis{display:grid;gap:12px;margin-bottom:24px}
+.kpi{background:var(--panel);border:1px solid var(--edge);border-radius:5px;padding:14px 15px;box-shadow:var(--shadow)}
+.kpi .k{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+.kpi .v{font-family:var(--display);font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.kpi .n{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.35}
+.v.ok{color:var(--ok)} .v.warn{color:var(--warn)} .v.bad{color:var(--bad)}
+.panel{background:var(--panel);border:1px solid var(--edge);border-radius:5px;
+       padding:19px 20px 20px;margin-bottom:18px;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid2 .panel{margin-bottom:0}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:4px}
+.pt{font-family:var(--display);font-size:16.5px;font-weight:600;letter-spacing:-.015em}
+.pn{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;max-width:78ch}
+.pmeta{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;
+        letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:13px;
+        padding-top:12px;border-top:1px solid var(--edge)}
+.legend i{display:inline-block;width:14px;height:2px;margin-right:6px;vertical-align:3px;border-radius:1px}
+table{width:100%;border-collapse:collapse}
+th{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+   text-align:left;padding:0 10px 9px 0;border-bottom:1px solid var(--edge);font-weight:400}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--edge);font-size:12.5px}
+td.num{font-family:var(--mono);text-align:right;font-size:11.5px}
+.barmini{height:5px;background:var(--track);border-radius:2px;overflow:hidden;min-width:64px}
+.barmini i{display:block;height:100%;border-radius:2px}
+.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--edge);
+      font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.05em;line-height:1.8}
+@media(max-width:880px){.grid2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){
+  .growbar{transform-origin:left center;animation:grow .7s cubic-bezier(.22,.8,.3,1) both}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}}
+</style>
+<div class="wrap">
+<div class="eyebrow"><span>Meridian Credit Ltd</span><span class="tag">Synthetic demonstration data</span><span>Originations Jan 2024 to Mar 2026</span></div>
+<h1>Consumer loan portfolio risk review</h1>
+<p class="sub">13,432 loans, UGX 24.0bn originated across four channels and four products.
+Headline default rate is 8.9%. That number is hiding a channel defaulting at twice the book average
+and two quarters of originations that should never have been written.</p>
+<div class="rule"></div>
+<div class="kpis" id="kpis"></div>
+
+<div class="panel">
+  <div class="ph"><div class="pt">Vintage curves: cumulative default by months on book</div>
+    <div class="pmeta">Selected origination cohorts</div></div>
+  <p class="pn">Each line follows one origination cohort as it seasons, so cohorts are compared at the
+     same age rather than the same calendar date. Everything written before mid 2025 converges around
+     8 to 10% by month six. The July to December 2025 cohorts break away immediately and sit 5 to 8
+     points higher at the same age. That is not a collections problem. Those loans were underwritten
+     badly and the damage was locked in at origination.</p>
+  <div id="vintage"></div>
+  <div class="legend" id="vlegend"></div>
+</div>
+
+<div class="grid2" style="margin-bottom:18px">
+  <div class="panel">
+    <div class="ph"><div class="pt">Channel performance</div><div class="pmeta">Default rate and mean score</div></div>
+    <p class="pn">The agent network originates at a credit score 58 points below every other channel
+       and defaults at roughly twice the rate. It is a third of the book.</p>
+    <div id="channels"></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">Early payment default</div><div class="pmeta">Defaults within 3 months</div></div>
+    <p class="pn">Nearly half of agent network defaults happen inside three months. Borrowers who never
+       make a meaningful payment point to origination quality or fraud, not to affordability.</p>
+    <div id="epd"></div>
+  </div>
+</div>
+
+<div class="grid2" style="margin-bottom:18px">
+  <div class="panel">
+    <div class="ph"><div class="pt">Risk versus price</div><div class="pmeta">Realised default at mean APR</div></div>
+    <p class="pn">Subprime carries 4.8 times the default rate of prime but only 1.7 times the price.
+       The band is being written below its risk adjusted cost.</p>
+    <div id="bands"></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">Delinquency distribution</div><div class="pmeta">Share of book by bucket</div></div>
+    <p class="pn">Everything from 30 days onward is PAR30, the standard portfolio at risk measure that
+       lenders and their funders watch.</p>
+    <div id="buckets"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="ph"><div class="pt">Collections strategy effectiveness</div><div class="pmeta">Accounts 30+ days past due</div></div>
+  <p class="pn">Cure rate is the share of delinquent accounts that avoid default. Field visits perform
+     best and cost most. The untouched accounts show what happens with no intervention at all. This
+     panel exists to answer one question: where should the next collections shilling go.</p>
+  <table><thead><tr><th>Strategy</th><th class="num" style="text-align:right">Accounts</th>
+    <th style="width:220px">Cure rate</th><th class="num" style="text-align:right">%</th></tr></thead>
+    <tbody id="contact"></tbody></table>
+</div>
+
+<div class="foot">
+Meridian Credit Ltd is a fictional lender. All figures are synthetically generated for demonstration,
+no real institution, borrower or loan is represented.<br>
+Built with Python, pandas and NumPy. Analysis reproducible from the published dataset.
+</div>
+</div>
+<script>const C={ok:'#17806A',warn:'#B57812',bad:'#C0392B',track:'#EDF0F3',muted:'#5C7183',
+         dim:'#8497A5',edge:'#E2E7EC',gate:'#B57812',ink:'#16232E'};
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const bn=n=>(n/1e9).toFixed(1)+'bn';
+function kpiStrip(el,items,cols){
+  const box=document.getElementById(el);
+  box.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  box.innerHTML=items.map(([k,v,cls,n])=>
+    `<div class="kpi"><div class="k">${k}</div><div class="v ${cls||''}">${v}</div><div class="n">${n||''}</div></div>`).join('');
+}
+function bars(el,rows,maxv,opts={}){
+  document.getElementById(el).innerHTML=rows.map((r,i)=>{
+    const w=Math.min(r.v/maxv*100,100);
+    return `<div style="display:grid;grid-template-columns:${opts.lw||'128px'} 1fr ${opts.vw||'74px'};gap:12px;align-items:center;padding:7px 0">
+      <div style="font-size:12.5px;line-height:1.25">${r.label}</div>
+      <div style="position:relative;height:15px">
+        <div style="position:absolute;inset:2px 0;background:${C.track};border-radius:2px"></div>
+        <div class="growbar" style="position:absolute;left:0;top:2px;bottom:2px;width:${w}%;background:${r.col};border-radius:2px;animation-delay:${i*50}ms"></div>
+        ${opts.gate?`<div style="position:absolute;left:${opts.gate/maxv*100}%;top:-1px;bottom:-1px;width:2px;background:${C.gate}"></div>`:''}
+      </div>
+      <div style="font-family:var(--mono);font-size:11.5px;text-align:right;color:${r.col}">${r.disp}</div></div>`;
+  }).join('')+(opts.note?`<div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:${C.dim};margin-top:11px;padding-top:11px;border-top:1px solid ${C.edge}">${opts.note}</div>`:'');
+}
+function lineChart(el,series,opts={}){
+  const W=opts.W||1080,H=opts.H||280,PL=52,PR=18,PT=14,PB=36;
+  const xs=opts.xs, maxY=opts.maxY, step=opts.step||20;
+  const x=i=>PL+(xs.length<2?0:i/(xs.length-1)*(W-PL-PR));
+  const y=v=>H-PB-(v/maxY)*(H-PT-PB);
+  let g='';
+  for(let v=0;v<=maxY;v+=step){
+    g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(v)}" y2="${y(v)}" stroke="${C.edge}" stroke-width="1"/>
+        <text x="${PL-8}" y="${y(v)+3.5}" fill="${C.dim}" font-size="10" font-family="IBM Plex Mono" text-anchor="end">${v}${opts.unit||''}</text>`;
+  }
+  if(opts.ref!=null){
+    g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(opts.ref)}" y2="${y(opts.ref)}" stroke="${C.gate}" stroke-width="1.8" stroke-dasharray="5 4"/>`;
+  }
+  xs.forEach((lab,i)=>{ if(i%opts.tick===0||i===xs.length-1)
+    g+=`<text x="${x(i)}" y="${H-14}" fill="${C.dim}" font-size="9.5" font-family="IBM Plex Mono" text-anchor="middle">${lab}</text>`;});
+  series.forEach(s=>{
+    const d=s.vals.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' ');
+    if(s.fill) g+=`<path d="${d} L${x(s.vals.length-1)},${y(0)} L${x(0)},${y(0)} Z" fill="${s.col}" opacity=".07"/>`;
+    g+=`<path d="${d}" fill="none" stroke="${s.col}" stroke-width="${s.w||2.2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(s.dot!==false) g+=`<circle cx="${x(s.vals.length-1)}" cy="${y(s.vals[s.vals.length-1])}" r="3.4" fill="${s.col}"/>`;
+  });
+  document.getElementById(el).innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${g}</svg>`;
+}
+function columns(el,vals,labels,opts={}){
+  const H=opts.H||168, maxv=Math.max(...vals)*1.14;
+  document.getElementById(el).innerHTML=
+   `<div style="display:flex;align-items:flex-end;gap:5px;height:${H}px">
+    ${vals.map((v,i)=>{const h=v/maxv*H;
+      return `<div style="flex:1;position:relative;height:${H}px;display:flex;align-items:flex-end">
+        <div style="width:100%;height:${h}px;background:${opts.col||C.ok};border-radius:2px 2px 0 0;opacity:${opts.dim&&opts.dim(i)?.42:1}"></div></div>`;}).join('')}
+    </div>
+    <div style="display:flex;gap:5px;margin-top:7px">
+      ${labels.map((l,i)=>`<div style="flex:1;font-family:var(--mono);font-size:8.5px;color:${C.dim};text-align:center">${(i%(opts.tick||3)===0)?l:''}</div>`).join('')}
+    </div>`;
+}
+
+
+const D={
+ "kpi": {
+  "loans": 13432,
+  "principal": 24037808000.0,
+  "par30": 20.5,
+  "par90": 8.9,
+  "default": 8.94,
+  "yield": 33.2
+ },
+ "vintage": [
+  {
+   "cohort": "2024-03",
+   "pts": [
+    {
+     "m": 1,
+     "r": 1.73
+    },
+    {
+     "m": 2,
+     "r": 2.59
+    },
+    {
+     "m": 3,
+     "r": 4.61
+    },
+    {
+     "m": 4,
+     "r": 5.48
+    },
+    {
+     "m": 5,
+     "r": 8.36
+    },
+    {
+     "m": 6,
+     "r": 11.82
+    },
+    {
+     "m": 7,
+     "r": 12.39
+    },
+    {
+     "m": 8,
+     "r": 12.68
+    },
+    {
+     "m": 9,
+     "r": 12.97
+    },
+    {
+     "m": 10,
+     "r": 13.54
+    },
+    {
+     "m": 11,
+     "r": 13.54
+    },
+    {
+     "m": 12,
+     "r": 13.83
+    }
+   ]
+  },
+  {
+   "cohort": "2024-09",
+   "pts": [
+    {
+     "m": 1,
+     "r": 1.7
+    },
+    {
+     "m": 2,
+     "r": 3.4
+    },
+    {
+     "m": 3,
+     "r": 4.26
+    },
+    {
+     "m": 4,
+     "r": 6.17
+    },
+    {
+     "m": 5,
+     "r": 7.87
+    },
+    {
+     "m": 6,
+     "r": 10.0
+    },
+    {
+     "m": 7,
+     "r": 10.64
+    },
+    {
+     "m": 8,
+     "r": 11.28
+    },
+    {
+     "m": 9,
+     "r": 12.34
+    },
+    {
+     "m": 10,
+     "r": 12.55
+    },
+    {
+     "m": 11,
+     "r": 12.98
+    },
+    {
+     "m": 12,
+     "r": 13.62
+    }
+   ]
+  },
+  {
+   "cohort": "2025-03",
+   "pts": [
+    {
+     "m": 1,
+     "r": 2.17
+    },
+    {
+     "m": 2,
+     "r": 3.8
+    },
+    {
+     "m": 3,
+     "r": 5.16
+    },
+    {
+     "m": 4,
+     "r": 7.34
+    },
+    {
+     "m": 5,
+     "r": 8.42
+    },
+    {
+     "m": 6,
+     "r": 9.78
+    },
+    {
+     "m": 7,
+     "r": 10.6
+    },
+    {
+     "m": 8,
+     "r": 11.68
+    },
+    {
+     "m": 9,
+     "r": 12.5
+    },
+    {
+     "m": 10,
+     "r": 12.77
+    },
+    {
+     "m": 11,
+     "r": 12.77
+    },
+    {
+     "m": 12,
+     "r": 13.04
+    }
+   ]
+  },
+  {
+   "cohort": "2025-09",
+   "pts": [
+    {
+     "m": 1,
+     "r": 3.28
+    },
+    {
+     "m": 2,
+     "r": 5.78
+    },
+    {
+     "m": 3,
+     "r": 7.51
+    },
+    {
+     "m": 4,
+     "r": 10.6
+    },
+    {
+     "m": 5,
+     "r": 13.68
+    },
+    {
+     "m": 6,
+     "r": 17.34
+    },
+    {
+     "m": 7,
+     "r": 18.5
+    },
+    {
+     "m": 8,
+     "r": 18.88
+    },
+    {
+     "m": 9,
+     "r": 22.16
+    }
+   ]
+  },
+  {
+   "cohort": "2025-12",
+   "pts": [
+    {
+     "m": 1,
+     "r": 2.72
+    },
+    {
+     "m": 2,
+     "r": 3.87
+    },
+    {
+     "m": 3,
+     "r": 6.16
+    },
+    {
+     "m": 4,
+     "r": 7.02
+    },
+    {
+     "m": 5,
+     "r": 8.31
+    },
+    {
+     "m": 6,
+     "r": 14.9
+    }
+   ]
+  }
+ ],
+ "channels": [
+  {
+   "name": "Agent network",
+   "n": 3996,
+   "score": 568,
+   "dflt": 13.94,
+   "principal": 7128729000.0
+  },
+  {
+   "name": "Digital app",
+   "n": 3689,
+   "score": 626,
+   "dflt": 7.26,
+   "principal": 6555202000.0
+  },
+  {
+   "name": "Branch",
+   "n": 3797,
+   "score": 626,
+   "dflt": 6.82,
+   "principal": 6806241000.0
+  },
+  {
+   "name": "Partner retail",
+   "n": 1950,
+   "score": 627,
+   "dflt": 6.0,
+   "principal": 3547636000.0
+  }
+ ],
+ "epd": [
+  {
+   "name": "Agent network",
+   "pct": 49.0
+  },
+  {
+   "name": "Branch",
+   "pct": 24.6
+  },
+  {
+   "name": "Partner retail",
+   "pct": 23.9
+  },
+  {
+   "name": "Digital app",
+   "pct": 22.9
+  }
+ ],
+ "bands": [
+  {
+   "band": "Prime",
+   "apr": 22.0,
+   "dflt": 2.66,
+   "n": 1689
+  },
+  {
+   "band": "Near-prime",
+   "apr": 31.0,
+   "dflt": 4.96,
+   "n": 4352
+  },
+  {
+   "band": "Subprime",
+   "apr": 37.0,
+   "dflt": 12.72,
+   "n": 7391
+  }
+ ],
+ "buckets": [
+  {
+   "b": "Current",
+   "pct": 72.9
+  },
+  {
+   "b": "1-29",
+   "pct": 6.6
+  },
+  {
+   "b": "30-59",
+   "pct": 6.8
+  },
+  {
+   "b": "60-89",
+   "pct": 4.8
+  },
+  {
+   "b": "90+",
+   "pct": 8.9
+  }
+ ],
+ "contact": [
+  {
+   "name": "Call + SMS",
+   "n": 1009,
+   "cured": 59.5
+  },
+  {
+   "name": "Field visit",
+   "n": 509,
+   "cured": 55.8
+  },
+  {
+   "name": "SMS only",
+   "n": 918,
+   "cured": 53.7
+  }
+ ]
+};
+const k=D.kpi;
+kpiStrip('kpis',[
+ ['Loans originated',fmt(k.loans),'',''],
+ ['Principal',bn(k.principal),'','UGX'],
+ ['PAR30',k.par30+'%',k.par30>15?'bad':'warn','30+ days past due'],
+ ['PAR90',k.par90+'%',k.par90>6?'bad':'warn','90+ days past due'],
+ ['Default rate',k.default+'%','bad','book average'],
+ ['Portfolio yield',k.yield+'%','ok','mean APR'],
+],6);
+
+(function(){
+ const cols=['#7FA8B8','#4E9E8F','#B57812','#D2703A','#C0392B'];
+ const xs=Array.from({length:12},(_,i)=>i+1);
+ const maxY=Math.ceil(Math.max(...D.vintage.flatMap(v=>v.pts.map(p=>p.r)))/5)*5+5;
+ const series=D.vintage.map((v,i)=>({vals:xs.map(m=>{
+    const p=v.pts.find(q=>q.m===m); return p?p.r:null;}).filter(x=>x!==null),col:cols[i],w:2.3}));
+ lineChart('vintage',series,{xs:xs,maxY:maxY,step:5,unit:'%',tick:1});
+ document.getElementById('vlegend').innerHTML=
+   D.vintage.map((v,i)=>`<span><i style="background:${cols[i]}"></i>${v.cohort} cohort</span>`).join('')
+   +`<span style="margin-left:auto;text-transform:none;letter-spacing:.04em">Horizontal axis: months on book</span>`;
+})();
+
+bars('channels',D.channels.map(c=>({label:c.name,v:c.dflt,
+  col:c.dflt>11?C.bad:c.dflt>7.5?C.warn:C.ok,disp:c.dflt+'% · '+c.score})),
+  Math.max(...D.channels.map(c=>c.dflt)),{vw:'104px',note:'Default rate and mean credit score'});
+
+bars('epd',D.epd.map(e=>({label:e.name,v:e.pct,col:e.pct>40?C.bad:e.pct>28?C.warn:C.ok,
+  disp:e.pct+'%'})),Math.max(...D.epd.map(e=>e.pct)),{vw:'56px',
+  note:'Share of defaults occurring within 3 months'});
+
+bars('bands',D.bands.map(b=>({label:b.band,v:b.dflt,col:b.dflt>10?C.bad:b.dflt>4?C.warn:C.ok,
+  disp:b.dflt+'% at '+b.apr+'%'})),Math.max(...D.bands.map(b=>b.dflt)),
+  {lw:'96px',vw:'124px',note:'Realised default rate at the mean APR charged'});
+
+bars('buckets',D.buckets.map(b=>({label:b.b==='Current'?'Current':b.b+' DPD',v:b.pct,
+  col:b.b==='Current'?C.ok:b.b==='1-29'?C.warn:C.bad,disp:b.pct+'%'})),
+  Math.max(...D.buckets.map(b=>b.pct)),{lw:'96px',vw:'56px',
+  note:'PAR30 combines the 30-59, 60-89 and 90+ buckets'});
+
+document.getElementById('contact').innerHTML=D.contact.map(c=>{
+ const col=c.cured>70?C.ok:c.cured>55?C.warn:C.bad;
+ return `<tr><td>${c.name}</td><td class="num">${fmt(c.n)}</td>
+  <td><div class="barmini"><i style="width:${c.cured}%;background:${col}"></i></div></td>
+  <td class="num" style="color:${col};font-weight:600">${c.cured}</td></tr>`;}).join('');
+</script>

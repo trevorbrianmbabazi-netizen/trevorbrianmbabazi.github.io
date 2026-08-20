@@ -1,0 +1,655 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acacia General Insurance, Portfolio Claims Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{
+  --ground:#F6F7F9; --panel:#FFFFFF; --edge:#E2E7EC; --track:#EDF0F3;
+  --ink:#16232E; --muted:#5C7183; --dim:#8497A5;
+  --ok:#17806A; --warn:#B57812; --bad:#C0392B; --gate:#B57812;
+  --shadow:0 1px 2px rgba(22,35,46,.05), 0 1px 8px rgba(22,35,46,.04);
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);
+     -webkit-font-smoothing:antialiased;padding:28px 26px 48px;line-height:1.55}
+.wrap{max-width:1220px;margin:0 auto}
+a{color:inherit}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+         color:var(--dim);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.eyebrow .tag{border:1px solid var(--edge);background:var(--panel);padding:3px 8px;border-radius:3px;color:var(--muted)}
+h1{font-family:var(--display);font-size:clamp(27px,4.3vw,42px);font-weight:800;
+   letter-spacing:-.028em;line-height:1.05;margin:13px 0 8px;max-width:20ch}
+.sub{color:var(--muted);font-size:13.5px;max-width:66ch}
+.rule{height:1px;background:var(--edge);margin:24px 0 22px}
+.kpis{display:grid;gap:12px;margin-bottom:24px}
+.kpi{background:var(--panel);border:1px solid var(--edge);border-radius:5px;padding:14px 15px;box-shadow:var(--shadow)}
+.kpi .k{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+.kpi .v{font-family:var(--display);font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.kpi .n{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.35}
+.v.ok{color:var(--ok)} .v.warn{color:var(--warn)} .v.bad{color:var(--bad)}
+.panel{background:var(--panel);border:1px solid var(--edge);border-radius:5px;
+       padding:19px 20px 20px;margin-bottom:18px;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid2 .panel{margin-bottom:0}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:4px}
+.pt{font-family:var(--display);font-size:16.5px;font-weight:600;letter-spacing:-.015em}
+.pn{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;max-width:78ch}
+.pmeta{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;
+        letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:13px;
+        padding-top:12px;border-top:1px solid var(--edge)}
+.legend i{display:inline-block;width:14px;height:2px;margin-right:6px;vertical-align:3px;border-radius:1px}
+table{width:100%;border-collapse:collapse}
+th{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+   text-align:left;padding:0 10px 9px 0;border-bottom:1px solid var(--edge);font-weight:400}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--edge);font-size:12.5px}
+td.num{font-family:var(--mono);text-align:right;font-size:11.5px}
+.barmini{height:5px;background:var(--track);border-radius:2px;overflow:hidden;min-width:64px}
+.barmini i{display:block;height:100%;border-radius:2px}
+.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--edge);
+      font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.05em;line-height:1.8}
+@media(max-width:880px){.grid2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){
+  .growbar{transform-origin:left center;animation:grow .7s cubic-bezier(.22,.8,.3,1) both}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}}
+</style>
+<div class="wrap">
+<div class="eyebrow"><span>Acacia General Insurance Ltd</span><span class="tag">Synthetic demonstration data</span><span>Jan 2025 to Jun 2026</span></div>
+<h1>Portfolio claims and loss ratio review</h1>
+<p class="sub">5,283 claims across six product lines, four regions and eight corporate medical schemes.
+The book reports a 64% loss ratio, which is comfortably profitable. One product line inside it has
+been losing money for nine months.</p>
+<div class="rule"></div>
+<div class="kpis" id="kpis"></div>
+
+<div class="panel">
+  <div class="ph"><div class="pt">Motor Comprehensive, Central region: loss ratio by month</div>
+    <div class="pmeta">Against 100% break-even</div></div>
+  <p class="pn">The grey line is the whole book, steady in the low sixties. The red line is Motor
+     Comprehensive in Central. It crosses 100% in October 2025 and never recovers, reaching 127% by
+     June 2026. Premium rates did not move across the entire period. This book was written at the
+     same price for eighteen months while the claims moved underneath it.</p>
+  <div id="lr"></div>
+  <div class="legend">
+    <span><i style="background:#C0392B"></i>Motor Comprehensive, Central</span>
+    <span><i style="background:#8497A5"></i>Whole book</span>
+    <span><i style="background:#B57812"></i>100% break-even</span>
+  </div>
+</div>
+
+<div class="grid2" style="margin-bottom:18px">
+  <div class="panel">
+    <div class="ph"><div class="pt">Loss ratio by product</div><div class="pmeta">Incurred over earned premium</div></div>
+    <p class="pn">Two lines carry the book. Motor Comprehensive at 88% and Medical at 77% are
+       subsidised by everything below them.</p>
+    <div id="products"></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">Vehicle theft as a share of motor claims</div><div class="pmeta">Monthly</div></div>
+    <p class="pn">Theft runs at 14% of motor claims before September 2025 and 40% after. Theft claims
+       also settle far larger than collision, so frequency and severity moved together.</p>
+    <div id="theft"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="ph"><div class="pt">Medical scheme experience</div><div class="pmeta">Average claim severity</div></div>
+  <p class="pn">Victoria Foods runs at roughly double the average severity of every other scheme in
+     the book, across 435 claims. At that volume it is not random variation, it is a renewal pricing
+     conversation with a number attached to it.</p>
+  <table><thead><tr><th>Scheme</th><th class="num" style="text-align:right">Claims</th>
+    <th style="width:220px">Average severity</th><th class="num" style="text-align:right">UGX</th></tr></thead>
+    <tbody id="schemes"></tbody></table>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <div class="ph"><div class="pt">Reporting lag by region</div><div class="pmeta">Days, loss to notification</div></div>
+    <p class="pn">Northern reports at four times the speed of everywhere else. Late notification means
+       IBNR reserves are understated, so this is a reserving problem as much as an operational one.</p>
+    <div id="lags"></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">Medical claim volume by month</div><div class="pmeta">Seasonality</div></div>
+    <p class="pn">November and December run around 30% above baseline, January and February below it.
+       Predictable, and therefore plannable for cash flow and reinsurance timing.</p>
+    <div id="season"></div>
+  </div>
+</div>
+
+<div class="foot">
+Acacia General Insurance Ltd is a fictional insurer. All figures are synthetically generated for
+demonstration, no real company, scheme, policy or claim is represented.<br>
+Cleaned from 5,325 raw records: 42 duplicates removed, 160 product name inconsistencies standardised,
+55 blank regions imputed from branch, 18 negative payments flagged. Built with Python and pandas.
+</div>
+</div>
+<script>const C={ok:'#17806A',warn:'#B57812',bad:'#C0392B',track:'#EDF0F3',muted:'#5C7183',
+         dim:'#8497A5',edge:'#E2E7EC',gate:'#B57812',ink:'#16232E'};
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const bn=n=>(n/1e9).toFixed(1)+'bn';
+function kpiStrip(el,items,cols){
+  const box=document.getElementById(el);
+  box.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  box.innerHTML=items.map(([k,v,cls,n])=>
+    `<div class="kpi"><div class="k">${k}</div><div class="v ${cls||''}">${v}</div><div class="n">${n||''}</div></div>`).join('');
+}
+function bars(el,rows,maxv,opts={}){
+  document.getElementById(el).innerHTML=rows.map((r,i)=>{
+    const w=Math.min(r.v/maxv*100,100);
+    return `<div style="display:grid;grid-template-columns:${opts.lw||'128px'} 1fr ${opts.vw||'74px'};gap:12px;align-items:center;padding:7px 0">
+      <div style="font-size:12.5px;line-height:1.25">${r.label}</div>
+      <div style="position:relative;height:15px">
+        <div style="position:absolute;inset:2px 0;background:${C.track};border-radius:2px"></div>
+        <div class="growbar" style="position:absolute;left:0;top:2px;bottom:2px;width:${w}%;background:${r.col};border-radius:2px;animation-delay:${i*50}ms"></div>
+        ${opts.gate?`<div style="position:absolute;left:${opts.gate/maxv*100}%;top:-1px;bottom:-1px;width:2px;background:${C.gate}"></div>`:''}
+      </div>
+      <div style="font-family:var(--mono);font-size:11.5px;text-align:right;color:${r.col}">${r.disp}</div></div>`;
+  }).join('')+(opts.note?`<div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:${C.dim};margin-top:11px;padding-top:11px;border-top:1px solid ${C.edge}">${opts.note}</div>`:'');
+}
+function lineChart(el,series,opts={}){
+  const W=opts.W||1080,H=opts.H||280,PL=52,PR=18,PT=14,PB=36;
+  const xs=opts.xs, maxY=opts.maxY, step=opts.step||20;
+  const x=i=>PL+(xs.length<2?0:i/(xs.length-1)*(W-PL-PR));
+  const y=v=>H-PB-(v/maxY)*(H-PT-PB);
+  let g='';
+  for(let v=0;v<=maxY;v+=step){
+    g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(v)}" y2="${y(v)}" stroke="${C.edge}" stroke-width="1"/>
+        <text x="${PL-8}" y="${y(v)+3.5}" fill="${C.dim}" font-size="10" font-family="IBM Plex Mono" text-anchor="end">${v}${opts.unit||''}</text>`;
+  }
+  if(opts.ref!=null){
+    g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(opts.ref)}" y2="${y(opts.ref)}" stroke="${C.gate}" stroke-width="1.8" stroke-dasharray="5 4"/>`;
+  }
+  xs.forEach((lab,i)=>{ if(i%opts.tick===0||i===xs.length-1)
+    g+=`<text x="${x(i)}" y="${H-14}" fill="${C.dim}" font-size="9.5" font-family="IBM Plex Mono" text-anchor="middle">${lab}</text>`;});
+  series.forEach(s=>{
+    const d=s.vals.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' ');
+    if(s.fill) g+=`<path d="${d} L${x(s.vals.length-1)},${y(0)} L${x(0)},${y(0)} Z" fill="${s.col}" opacity=".07"/>`;
+    g+=`<path d="${d}" fill="none" stroke="${s.col}" stroke-width="${s.w||2.2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(s.dot!==false) g+=`<circle cx="${x(s.vals.length-1)}" cy="${y(s.vals[s.vals.length-1])}" r="3.4" fill="${s.col}"/>`;
+  });
+  document.getElementById(el).innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${g}</svg>`;
+}
+function columns(el,vals,labels,opts={}){
+  const H=opts.H||168, maxv=Math.max(...vals)*1.14;
+  document.getElementById(el).innerHTML=
+   `<div style="display:flex;align-items:flex-end;gap:5px;height:${H}px">
+    ${vals.map((v,i)=>{const h=v/maxv*H;
+      return `<div style="flex:1;position:relative;height:${H}px;display:flex;align-items:flex-end">
+        <div style="width:100%;height:${h}px;background:${opts.col||C.ok};border-radius:2px 2px 0 0;opacity:${opts.dim&&opts.dim(i)?.42:1}"></div></div>`;}).join('')}
+    </div>
+    <div style="display:flex;gap:5px;margin-top:7px">
+      ${labels.map((l,i)=>`<div style="flex:1;font-family:var(--mono);font-size:8.5px;color:${C.dim};text-align:center">${(i%(opts.tick||3)===0)?l:''}</div>`).join('')}
+    </div>`;
+}
+
+
+const D={
+ "kpi": {
+  "claims": 5283,
+  "incurred": 31127220000.0,
+  "earned": 48631690000.0,
+  "lr": 64.0,
+  "severity": 5891959.114139694,
+  "lag": 15.5,
+  "outstanding": 6400979507.47
+ },
+ "products": [
+  {
+   "name": "Motor Comprehensive",
+   "lr": 88.0,
+   "claims": 1344,
+   "sev": 8728918.898809524
+  },
+  {
+   "name": "Medical",
+   "lr": 77.4,
+   "claims": 2716,
+   "sev": 1435188.880706922
+  },
+  {
+   "name": "Marine & Goods in Transit",
+   "lr": 58.1,
+   "claims": 149,
+   "sev": 20749939.597315438
+  },
+  {
+   "name": "Motor Third Party",
+   "lr": 54.5,
+   "claims": 614,
+   "sev": 7561526.058631922
+  },
+  {
+   "name": "Personal Accident",
+   "lr": 47.8,
+   "claims": 323,
+   "sev": 4532764.705882353
+  },
+  {
+   "name": "Fire & Property",
+   "lr": 47.1,
+   "claims": 137,
+   "sev": 45977948.90510949
+  }
+ ],
+ "mc": [
+  {
+   "m": "2025-01",
+   "lr": 70.1
+  },
+  {
+   "m": "2025-02",
+   "lr": 71.0
+  },
+  {
+   "m": "2025-03",
+   "lr": 74.9
+  },
+  {
+   "m": "2025-04",
+   "lr": 77.0
+  },
+  {
+   "m": "2025-05",
+   "lr": 78.4
+  },
+  {
+   "m": "2025-06",
+   "lr": 81.0
+  },
+  {
+   "m": "2025-07",
+   "lr": 88.4
+  },
+  {
+   "m": "2025-08",
+   "lr": 97.0
+  },
+  {
+   "m": "2025-09",
+   "lr": 93.5
+  },
+  {
+   "m": "2025-10",
+   "lr": 106.7
+  },
+  {
+   "m": "2025-11",
+   "lr": 95.7
+  },
+  {
+   "m": "2025-12",
+   "lr": 104.4
+  },
+  {
+   "m": "2026-01",
+   "lr": 115.0
+  },
+  {
+   "m": "2026-02",
+   "lr": 111.1
+  },
+  {
+   "m": "2026-03",
+   "lr": 125.2
+  },
+  {
+   "m": "2026-04",
+   "lr": 131.0
+  },
+  {
+   "m": "2026-05",
+   "lr": 126.3
+  },
+  {
+   "m": "2026-06",
+   "lr": 127.1
+  }
+ ],
+ "book": [
+  {
+   "m": "2025-01",
+   "lr": 54.5
+  },
+  {
+   "m": "2025-02",
+   "lr": 62.1
+  },
+  {
+   "m": "2025-03",
+   "lr": 57.5
+  },
+  {
+   "m": "2025-04",
+   "lr": 56.5
+  },
+  {
+   "m": "2025-05",
+   "lr": 60.2
+  },
+  {
+   "m": "2025-06",
+   "lr": 68.0
+  },
+  {
+   "m": "2025-07",
+   "lr": 58.4
+  },
+  {
+   "m": "2025-08",
+   "lr": 53.2
+  },
+  {
+   "m": "2025-09",
+   "lr": 78.3
+  },
+  {
+   "m": "2025-10",
+   "lr": 75.0
+  },
+  {
+   "m": "2025-11",
+   "lr": 66.2
+  },
+  {
+   "m": "2025-12",
+   "lr": 66.8
+  },
+  {
+   "m": "2026-01",
+   "lr": 61.6
+  },
+  {
+   "m": "2026-02",
+   "lr": 62.6
+  },
+  {
+   "m": "2026-03",
+   "lr": 69.5
+  },
+  {
+   "m": "2026-04",
+   "lr": 70.8
+  },
+  {
+   "m": "2026-05",
+   "lr": 72.5
+  },
+  {
+   "m": "2026-06",
+   "lr": 65.3
+  }
+ ],
+ "causes": [
+  {
+   "m": "2025-01",
+   "theft": 16.7
+  },
+  {
+   "m": "2025-02",
+   "theft": 16.7
+  },
+  {
+   "m": "2025-03",
+   "theft": 11.3
+  },
+  {
+   "m": "2025-04",
+   "theft": 14.5
+  },
+  {
+   "m": "2025-05",
+   "theft": 12.3
+  },
+  {
+   "m": "2025-06",
+   "theft": 15.1
+  },
+  {
+   "m": "2025-07",
+   "theft": 15.9
+  },
+  {
+   "m": "2025-08",
+   "theft": 11.8
+  },
+  {
+   "m": "2025-09",
+   "theft": 32.9
+  },
+  {
+   "m": "2025-10",
+   "theft": 38.0
+  },
+  {
+   "m": "2025-11",
+   "theft": 35.4
+  },
+  {
+   "m": "2025-12",
+   "theft": 40.0
+  },
+  {
+   "m": "2026-01",
+   "theft": 33.8
+  },
+  {
+   "m": "2026-02",
+   "theft": 44.7
+  },
+  {
+   "m": "2026-03",
+   "theft": 51.1
+  },
+  {
+   "m": "2026-04",
+   "theft": 44.3
+  },
+  {
+   "m": "2026-05",
+   "theft": 36.0
+  },
+  {
+   "m": "2026-06",
+   "theft": 37.6
+  }
+ ],
+ "schemes": [
+  {
+   "name": "Victoria Foods Ltd",
+   "sev": 2459935.185185185,
+   "n": 432
+  },
+  {
+   "name": "Kabalega Sugar Works",
+   "sev": 1392333.3333333333,
+   "n": 201
+  },
+  {
+   "name": "Nsambya Tech Park",
+   "sev": 1388982.6589595375,
+   "n": 173
+  },
+  {
+   "name": "Elgon Tea Estates",
+   "sev": 1379294.4444444445,
+   "n": 180
+  },
+  {
+   "name": "Bugoloobi Millers",
+   "sev": 1226746.0317460317,
+   "n": 189
+  },
+  {
+   "name": "Rwenzori Logistics",
+   "sev": 1192969.1780821919,
+   "n": 292
+  },
+  {
+   "name": "Pearl Telecom Uganda",
+   "sev": 1119613.2075471699,
+   "n": 318
+  },
+  {
+   "name": "Kigo Hospitality Group",
+   "sev": 1115964.49704142,
+   "n": 169
+  }
+ ],
+ "lags": [
+  {
+   "name": "Central",
+   "d": 11.6
+  },
+  {
+   "name": "Eastern",
+   "d": 11.7
+  },
+  {
+   "name": "Western",
+   "d": 11.8
+  },
+  {
+   "name": "Northern",
+   "d": 49.1
+  }
+ ],
+ "season": [
+  {
+   "m": "2025-01",
+   "n": 144
+  },
+  {
+   "m": "2025-02",
+   "n": 131
+  },
+  {
+   "m": "2025-03",
+   "n": 151
+  },
+  {
+   "m": "2025-04",
+   "n": 160
+  },
+  {
+   "m": "2025-05",
+   "n": 120
+  },
+  {
+   "m": "2025-06",
+   "n": 140
+  },
+  {
+   "m": "2025-07",
+   "n": 134
+  },
+  {
+   "m": "2025-08",
+   "n": 150
+  },
+  {
+   "m": "2025-09",
+   "n": 131
+  },
+  {
+   "m": "2025-10",
+   "n": 155
+  },
+  {
+   "m": "2025-11",
+   "n": 189
+  },
+  {
+   "m": "2025-12",
+   "n": 206
+  },
+  {
+   "m": "2026-01",
+   "n": 140
+  },
+  {
+   "m": "2026-02",
+   "n": 122
+  },
+  {
+   "m": "2026-03",
+   "n": 158
+  },
+  {
+   "m": "2026-04",
+   "n": 141
+  },
+  {
+   "m": "2026-05",
+   "n": 163
+  },
+  {
+   "m": "2026-06",
+   "n": 181
+  }
+ ],
+ "months": [
+  "2025-01",
+  "2025-02",
+  "2025-03",
+  "2025-04",
+  "2025-05",
+  "2025-06",
+  "2025-07",
+  "2025-08",
+  "2025-09",
+  "2025-10",
+  "2025-11",
+  "2025-12",
+  "2026-01",
+  "2026-02",
+  "2026-03",
+  "2026-04",
+  "2026-05",
+  "2026-06"
+ ]
+};
+const k=D.kpi;
+kpiStrip('kpis',[
+ ['Claims',fmt(k.claims),'',''],
+ ['Incurred',bn(k.incurred),'','UGX'],
+ ['Earned premium',bn(k.earned),'','UGX'],
+ ['Loss ratio',k.lr+'%',k.lr>85?'bad':k.lr>70?'warn':'ok','book average'],
+ ['Average severity',fmt(k.severity/1e6)+'m','','UGX per claim'],
+ ['Reporting lag',k.lag+'d','warn','loss to notification'],
+],6);
+
+/* loss ratio trend */
+(function(){
+ const xs=D.mc.map(p=>p.m.slice(2).replace('-',"'"));
+ lineChart('lr',[
+   {vals:D.book.map(p=>p.lr),col:'#8497A5',w:1.8,dot:false},
+   {vals:D.mc.map(p=>p.lr),col:'#C0392B',w:2.6,fill:true},
+ ],{xs:xs,maxY:140,step:20,unit:'%',ref:100,tick:2});
+})();
+
+bars('products',D.products.map(p=>({label:p.name,v:p.lr,
+  col:p.lr>85?C.bad:p.lr>70?C.warn:C.ok,disp:p.lr+'%'})),
+  Math.max(...D.products.map(p=>p.lr)),{lw:'168px',vw:'56px',gate:100,
+  note:'Gold line marks the 100% break-even point'});
+
+columns('theft',D.causes.map(c=>c.theft),D.causes.map(c=>c.m.slice(5)),
+  {col:C.bad,tick:3,dim:i=>i<8});
+
+document.getElementById('schemes').innerHTML=D.schemes.map(s=>{
+ const mx=D.schemes[0].sev, col=s.sev>2e6?C.bad:s.sev>1.3e6?C.warn:C.ok;
+ return `<tr><td>${s.name}</td><td class="num">${fmt(s.n)}</td>
+  <td><div class="barmini"><i style="width:${s.sev/mx*100}%;background:${col}"></i></div></td>
+  <td class="num" style="color:${col};font-weight:600">${fmt(s.sev/1e6*10)/10}m</td></tr>`;}).join('');
+
+bars('lags',D.lags.map(l=>({label:l.name,v:l.d,col:l.d>30?C.bad:l.d>18?C.warn:C.ok,
+  disp:l.d+'d'})),Math.max(...D.lags.map(l=>l.d)),{lw:'96px',vw:'56px',
+  note:'Average days between date of loss and notification'});
+
+columns('season',D.season.map(s=>s.n),D.season.map(s=>s.m.slice(5)),
+  {col:C.ok,tick:3,dim:i=>!['11','12'].includes(D.season[i].m.slice(5))});
+</script>

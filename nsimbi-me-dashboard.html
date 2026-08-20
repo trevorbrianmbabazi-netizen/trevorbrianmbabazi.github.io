@@ -1,0 +1,531 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nsimbi Resilience Programme, Performance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root{
+  --ground:#F6F7F9; --panel:#FFFFFF; --edge:#E2E7EC; --track:#EDF0F3;
+  --ink:#16232E; --muted:#5C7183; --dim:#8497A5;
+  --ok:#17806A; --warn:#B57812; --bad:#C0392B; --gate:#B57812;
+  --shadow:0 1px 2px rgba(22,35,46,.05), 0 1px 8px rgba(22,35,46,.04);
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);
+     -webkit-font-smoothing:antialiased;padding:28px 26px 48px;line-height:1.55}
+.wrap{max-width:1220px;margin:0 auto}
+a{color:inherit}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+         color:var(--dim);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.eyebrow .tag{border:1px solid var(--edge);background:var(--panel);padding:3px 8px;border-radius:3px;color:var(--muted)}
+h1{font-family:var(--display);font-size:clamp(27px,4.3vw,42px);font-weight:800;
+   letter-spacing:-.028em;line-height:1.05;margin:13px 0 8px;max-width:20ch}
+.sub{color:var(--muted);font-size:13.5px;max-width:66ch}
+.rule{height:1px;background:var(--edge);margin:24px 0 22px}
+.kpis{display:grid;gap:12px;margin-bottom:24px}
+.kpi{background:var(--panel);border:1px solid var(--edge);border-radius:5px;padding:14px 15px;box-shadow:var(--shadow)}
+.kpi .k{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+.kpi .v{font-family:var(--display);font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.kpi .n{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.35}
+.v.ok{color:var(--ok)} .v.warn{color:var(--warn)} .v.bad{color:var(--bad)}
+.panel{background:var(--panel);border:1px solid var(--edge);border-radius:5px;
+       padding:19px 20px 20px;margin-bottom:18px;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid2 .panel{margin-bottom:0}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:4px}
+.pt{font-family:var(--display);font-size:16.5px;font-weight:600;letter-spacing:-.015em}
+.pn{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:16px;max-width:78ch}
+.pmeta{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;
+        letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:13px;
+        padding-top:12px;border-top:1px solid var(--edge)}
+.legend i{display:inline-block;width:14px;height:2px;margin-right:6px;vertical-align:3px;border-radius:1px}
+table{width:100%;border-collapse:collapse}
+th{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+   text-align:left;padding:0 10px 9px 0;border-bottom:1px solid var(--edge);font-weight:400}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--edge);font-size:12.5px}
+td.num{font-family:var(--mono);text-align:right;font-size:11.5px}
+.barmini{height:5px;background:var(--track);border-radius:2px;overflow:hidden;min-width:64px}
+.barmini i{display:block;height:100%;border-radius:2px}
+.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--edge);
+      font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.05em;line-height:1.8}
+@media(max-width:880px){.grid2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){
+  .growbar{transform-origin:left center;animation:grow .7s cubic-bezier(.22,.8,.3,1) both}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}}
+
+.spine-head,.srow{display:grid;grid-template-columns:92px 66px 1fr 54px 108px 78px;gap:12px;align-items:center}
+.spine-head{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+            color:var(--dim);padding-bottom:9px;border-bottom:1px solid var(--edge);margin-bottom:4px}
+.srow{padding:8px 0;border-bottom:1px solid var(--edge)}
+.srow:last-child{border-bottom:none}
+.dname{font-size:13px;font-weight:600;letter-spacing:-.01em}
+.dreg{font-family:var(--mono);font-size:10px;color:var(--dim)}
+.pct{font-family:var(--mono);font-size:12.5px;font-weight:600;text-align:right}
+.cpb{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+@media(max-width:880px){.spine-head,.srow{grid-template-columns:80px 1fr 48px;gap:9px}
+  .dreg,.cpb,.fem-cell{display:none}}
+</style>
+<div class="wrap">
+<div class="eyebrow"><span>Bwindi Development Trust</span><span class="tag">Synthetic demonstration data</span><span>FY24/25 Q1 to FY25/26 Q4</span></div>
+<h1>Nsimbi Resilience Programme</h1>
+<p class="sub">Eight quarters of delivery across eight districts and four implementing partners.
+Two thirds of the programme period has elapsed. Reach is close to plan overall, but the portfolio
+average is hiding two districts and one output that are materially off track.</p>
+<div class="rule"></div>
+<div class="kpis" id="kpis"></div>
+
+<div class="panel">
+  <div class="ph"><div class="pt">District attainment against target</div>
+    <div class="pmeta">Bar is reach against target, gate is 100%</div></div>
+  <p class="pn">Six districts are within reach of plan. Kotido has delivered under half its target and
+     Amudat is a distant seventh. Those same two districts are the only ones where female
+     participation sits below 40%, and they carry the highest cost per beneficiary in the programme.
+     The underperformance is expensive as well as incomplete.</p>
+  <div class="spine-head">
+    <div>District</div><div>Region</div><div>Attainment</div><div style="text-align:right">%</div>
+    <div>Female share</div><div style="text-align:right">Cost/ben</div>
+  </div>
+  <div id="spine"></div>
+  <div class="legend">
+    <span><i style="background:#17806A"></i>On track, 95% or above</span>
+    <span><i style="background:#B57812"></i>At risk, 75 to 95%</span>
+    <span><i style="background:#C0392B"></i>Off track, under 75%</span>
+    <span><i style="background:#B57812;width:2px;height:11px"></i>Target</span>
+    <span><i style="background:#5C7183;border-radius:50%;width:9px;height:9px"></i>Female share, 50% parity mark</span>
+  </div>
+</div>
+
+<div class="grid2" style="margin-bottom:18px">
+  <div class="panel">
+    <div class="ph"><div class="pt">Reach by quarter</div><div class="pmeta">Against quarterly target</div></div>
+    <p class="pn">Delivery dips in Q3 of both years. The January to March rains restrict field access.
+       It is predictable, so it is plannable.</p>
+    <div id="qchart"></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">Budget absorption by output</div><div class="pmeta">66.7% of time elapsed</div></div>
+    <p class="pn">Output 3 has spent a third of its life of programme budget with two thirds of the
+       period gone. On current burn it closes with roughly half its allocation unspent.</p>
+    <div id="abschart"></div>
+  </div>
+</div>
+
+<div class="grid2" style="margin-bottom:18px">
+  <div class="panel">
+    <div class="ph"><div class="pt">Cost per beneficiary</div><div class="pmeta">UGX, all outputs</div></div>
+    <p class="pn">A threefold spread across districts. Remoteness explains most of it, but it is the
+       number to bring to any conversation about where the next tranche goes.</p>
+    <div id="cpbchart"></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><div class="pt">Reporting lag by partner</div><div class="pmeta">Days after due date</div></div>
+    <p class="pn">Three partners report within about a week. One averages five weeks late, delaying
+       every downstream verification and payment cycle.</p>
+    <div id="lagchart"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="ph"><div class="pt">Indicator performance against target to date</div>
+    <div class="pmeta">8 outcome indicators</div></div>
+  <p class="pn">Both Output 3 indicators sit near 40%. Every other indicator in the results framework
+     is above 69%, which points to a delivery problem specific to that output rather than a programme
+     wide shortfall.</p>
+  <table><thead><tr><th style="width:52px">Code</th><th>Indicator</th>
+    <th class="num" style="width:78px;text-align:right">Actual</th>
+    <th class="num" style="width:78px;text-align:right">Target</th>
+    <th style="width:140px">Achievement</th>
+    <th class="num" style="width:52px;text-align:right">%</th></tr></thead>
+    <tbody id="indtable"></tbody></table>
+</div>
+
+<div class="foot">
+Nsimbi Resilience Programme is a fictional programme. All figures are synthetically generated for
+demonstration, no real programme, partner, district record or beneficiary is represented.<br>
+Sources: activity register of 4,286 records, quarterly financial report, results framework.
+</div>
+</div>
+<script>const C={ok:'#17806A',warn:'#B57812',bad:'#C0392B',track:'#EDF0F3',muted:'#5C7183',
+         dim:'#8497A5',edge:'#E2E7EC',gate:'#B57812',ink:'#16232E'};
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const bn=n=>(n/1e9).toFixed(1)+'bn';
+function kpiStrip(el,items,cols){
+  const box=document.getElementById(el);
+  box.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  box.innerHTML=items.map(([k,v,cls,n])=>
+    `<div class="kpi"><div class="k">${k}</div><div class="v ${cls||''}">${v}</div><div class="n">${n||''}</div></div>`).join('');
+}
+function bars(el,rows,maxv,opts={}){
+  document.getElementById(el).innerHTML=rows.map((r,i)=>{
+    const w=Math.min(r.v/maxv*100,100);
+    return `<div style="display:grid;grid-template-columns:${opts.lw||'128px'} 1fr ${opts.vw||'74px'};gap:12px;align-items:center;padding:7px 0">
+      <div style="font-size:12.5px;line-height:1.25">${r.label}</div>
+      <div style="position:relative;height:15px">
+        <div style="position:absolute;inset:2px 0;background:${C.track};border-radius:2px"></div>
+        <div class="growbar" style="position:absolute;left:0;top:2px;bottom:2px;width:${w}%;background:${r.col};border-radius:2px;animation-delay:${i*50}ms"></div>
+        ${opts.gate?`<div style="position:absolute;left:${opts.gate/maxv*100}%;top:-1px;bottom:-1px;width:2px;background:${C.gate}"></div>`:''}
+      </div>
+      <div style="font-family:var(--mono);font-size:11.5px;text-align:right;color:${r.col}">${r.disp}</div></div>`;
+  }).join('')+(opts.note?`<div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:${C.dim};margin-top:11px;padding-top:11px;border-top:1px solid ${C.edge}">${opts.note}</div>`:'');
+}
+function lineChart(el,series,opts={}){
+  const W=opts.W||1080,H=opts.H||280,PL=52,PR=18,PT=14,PB=36;
+  const xs=opts.xs, maxY=opts.maxY, step=opts.step||20;
+  const x=i=>PL+(xs.length<2?0:i/(xs.length-1)*(W-PL-PR));
+  const y=v=>H-PB-(v/maxY)*(H-PT-PB);
+  let g='';
+  for(let v=0;v<=maxY;v+=step){
+    g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(v)}" y2="${y(v)}" stroke="${C.edge}" stroke-width="1"/>
+        <text x="${PL-8}" y="${y(v)+3.5}" fill="${C.dim}" font-size="10" font-family="IBM Plex Mono" text-anchor="end">${v}${opts.unit||''}</text>`;
+  }
+  if(opts.ref!=null){
+    g+=`<line x1="${PL}" x2="${W-PR}" y1="${y(opts.ref)}" y2="${y(opts.ref)}" stroke="${C.gate}" stroke-width="1.8" stroke-dasharray="5 4"/>`;
+  }
+  xs.forEach((lab,i)=>{ if(i%opts.tick===0||i===xs.length-1)
+    g+=`<text x="${x(i)}" y="${H-14}" fill="${C.dim}" font-size="9.5" font-family="IBM Plex Mono" text-anchor="middle">${lab}</text>`;});
+  series.forEach(s=>{
+    const d=s.vals.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' ');
+    if(s.fill) g+=`<path d="${d} L${x(s.vals.length-1)},${y(0)} L${x(0)},${y(0)} Z" fill="${s.col}" opacity=".07"/>`;
+    g+=`<path d="${d}" fill="none" stroke="${s.col}" stroke-width="${s.w||2.2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(s.dot!==false) g+=`<circle cx="${x(s.vals.length-1)}" cy="${y(s.vals[s.vals.length-1])}" r="3.4" fill="${s.col}"/>`;
+  });
+  document.getElementById(el).innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${g}</svg>`;
+}
+function columns(el,vals,labels,opts={}){
+  const H=opts.H||168, maxv=Math.max(...vals)*1.14;
+  document.getElementById(el).innerHTML=
+   `<div style="display:flex;align-items:flex-end;gap:5px;height:${H}px">
+    ${vals.map((v,i)=>{const h=v/maxv*H;
+      return `<div style="flex:1;position:relative;height:${H}px;display:flex;align-items:flex-end">
+        <div style="width:100%;height:${h}px;background:${opts.col||C.ok};border-radius:2px 2px 0 0;opacity:${opts.dim&&opts.dim(i)?.42:1}"></div></div>`;}).join('')}
+    </div>
+    <div style="display:flex;gap:5px;margin-top:7px">
+      ${labels.map((l,i)=>`<div style="flex:1;font-family:var(--mono);font-size:8.5px;color:${C.dim};text-align:center">${(i%(opts.tick||3)===0)?l:''}</div>`).join('')}
+    </div>`;
+}
+
+
+const D={
+ "kpi": {
+  "reach": 203844,
+  "attain": 88.5,
+  "absorption": 63.8,
+  "elapsed": 66.7,
+  "on_track": 6,
+  "districts": 8,
+  "female": 51.3,
+  "lag": 15.2,
+  "activities": 4286,
+  "spend": 22241011000.0
+ },
+ "districts": [
+  {
+   "name": "Gulu",
+   "region": "Northern",
+   "partner": "Acholi Resilience Forum",
+   "reach": 29894,
+   "target": 28700,
+   "attain": 104.2,
+   "female": 54.2,
+   "cpb": 94007
+  },
+  {
+   "name": "Mbale",
+   "region": "Eastern",
+   "partner": "Elgon Livelihoods Network",
+   "reach": 29473,
+   "target": 28600,
+   "attain": 103.1,
+   "female": 55.1,
+   "cpb": 71379
+  },
+  {
+   "name": "Wakiso",
+   "region": "Central",
+   "partner": "Kampala Outreach Initiative",
+   "reach": 29028,
+   "target": 28500,
+   "attain": 101.9,
+   "female": 54.6,
+   "cpb": 46987
+  },
+  {
+   "name": "Mukono",
+   "region": "Central",
+   "partner": "Kampala Outreach Initiative",
+   "reach": 28742,
+   "target": 28700,
+   "attain": 100.1,
+   "female": 54.4,
+   "cpb": 56819
+  },
+  {
+   "name": "Hoima",
+   "region": "Western",
+   "partner": "Rwenzori Community Action",
+   "reach": 27475,
+   "target": 28600,
+   "attain": 96.1,
+   "female": 54.3,
+   "cpb": 85356
+  },
+  {
+   "name": "Soroti",
+   "region": "Eastern",
+   "partner": "Elgon Livelihoods Network",
+   "reach": 26374,
+   "target": 28700,
+   "attain": 91.9,
+   "female": 54.5,
+   "cpb": 79392
+  },
+  {
+   "name": "Amudat",
+   "region": "Karamoja",
+   "partner": "Rwenzori Community Action",
+   "reach": 20917,
+   "target": 29500,
+   "attain": 70.9,
+   "female": 34.2,
+   "cpb": 154185
+  },
+  {
+   "name": "Kotido",
+   "region": "Karamoja",
+   "partner": "Acholi Resilience Forum",
+   "reach": 11941,
+   "target": 29100,
+   "attain": 41.0,
+   "female": 34.4,
+   "cpb": 148466
+  }
+ ],
+ "quarters": [
+  {
+   "label": "FY24/25 Q1",
+   "short": "Q1\n24/25",
+   "reach": 23829,
+   "target": 28800
+  },
+  {
+   "label": "FY24/25 Q2",
+   "short": "Q2\n24/25",
+   "reach": 25439,
+   "target": 28800
+  },
+  {
+   "label": "FY24/25 Q3",
+   "short": "Q3\n24/25",
+   "reach": 20887,
+   "target": 28800
+  },
+  {
+   "label": "FY24/25 Q4",
+   "short": "Q4\n24/25",
+   "reach": 25425,
+   "target": 28800
+  },
+  {
+   "label": "FY25/26 Q1",
+   "short": "Q1\n25/26",
+   "reach": 26921,
+   "target": 28800
+  },
+  {
+   "label": "FY25/26 Q2",
+   "short": "Q2\n25/26",
+   "reach": 26989,
+   "target": 28800
+  },
+  {
+   "label": "FY25/26 Q3",
+   "short": "Q3\n25/26",
+   "reach": 22598,
+   "target": 28800
+  },
+  {
+   "label": "FY25/26 Q4",
+   "short": "Q4\n25/26",
+   "reach": 31756,
+   "target": 28800
+  }
+ ],
+ "absorption": [
+  {
+   "output": "Water & Sanitation",
+   "code": "Output 2",
+   "pct": 71.0,
+   "exp": 13026364000.0,
+   "lop": 18347000000.0
+  },
+  {
+   "output": "Climate-Smart Agriculture",
+   "code": "Output 1",
+   "pct": 68.0,
+   "exp": 4072384000.0,
+   "lop": 5989000000.0
+  },
+  {
+   "output": "Community Governance",
+   "code": "Output 4",
+   "pct": 63.0,
+   "exp": 3398149000.0,
+   "lop": 5394000000.0
+  },
+  {
+   "output": "Market Linkages & Enterprise",
+   "code": "Output 3",
+   "pct": 34.0,
+   "exp": 1744114000.0,
+   "lop": 5130000000.0
+  }
+ ],
+ "partners": [
+  {
+   "name": "Kampala Outreach Initiative",
+   "lag": 7.2
+  },
+  {
+   "name": "Acholi Resilience Forum",
+   "lag": 7.6
+  },
+  {
+   "name": "Elgon Livelihoods Network",
+   "lag": 7.6
+  },
+  {
+   "name": "Rwenzori Community Action",
+   "lag": 38.2
+  }
+ ],
+ "indicators": [
+  {
+   "code": "OI-3.1",
+   "name": "Producer groups formed and active",
+   "pct": 40.0,
+   "act": 64,
+   "tgt": 160
+  },
+  {
+   "code": "OI-3.2",
+   "name": "Members reporting increased income",
+   "pct": 41.1,
+   "act": 1779,
+   "tgt": 4328
+  },
+  {
+   "code": "OI-4.2",
+   "name": "Local leaders trained",
+   "pct": 69.0,
+   "act": 734,
+   "tgt": 1064
+  },
+  {
+   "code": "OI-4.1",
+   "name": "Community members in accountability forums",
+   "pct": 69.9,
+   "act": 6521,
+   "tgt": 9328
+  },
+  {
+   "code": "OI-1.1",
+   "name": "Farmers trained in climate-smart practices",
+   "pct": 72.9,
+   "act": 8743,
+   "tgt": 12000
+  },
+  {
+   "code": "OI-1.2",
+   "name": "Households adopting drought-tolerant varieties",
+   "pct": 73.5,
+   "act": 4412,
+   "tgt": 6000
+  },
+  {
+   "code": "OI-2.1",
+   "name": "People with access to a safe water source",
+   "pct": 80.6,
+   "act": 13958,
+   "tgt": 17328
+  },
+  {
+   "code": "OI-2.2",
+   "name": "Water user committees functional",
+   "pct": 81.7,
+   "act": 98,
+   "tgt": 120
+  }
+ ]
+};
+const band=p=>p>=95?C.ok:p>=75?C.warn:C.bad;
+const k=D.kpi;
+kpiStrip('kpis',[
+ ['Beneficiaries reached',fmt(k.reach),'',`across ${fmt(k.activities)} activities`],
+ ['Attainment',k.attain+'%',k.attain>=95?'ok':k.attain>=75?'warn':'bad','cumulative, all districts'],
+ ['Budget absorbed',k.absorption+'%','warn',`against ${k.elapsed}% elapsed`],
+ ['Districts on track',`${k.on_track}/${k.districts}`,k.on_track>=7?'ok':'warn','90% of district target'],
+ ['Female participation',k.female+'%',k.female>=50?'ok':'warn','parity target 50%'],
+],5);
+
+const SMAX=120, gate=100/SMAX*100;
+document.getElementById('spine').innerHTML=D.districts.map((d,i)=>{
+  const w=Math.min(d.attain,SMAX)/SMAX*100, col=band(d.attain);
+  const femX=Math.min(d.female,70)/70*100, femCol=d.female>=45?C.muted:C.bad;
+  return `<div class="srow">
+    <div class="dname">${d.name}</div>
+    <div class="dreg">${d.region}</div>
+    <div style="position:relative;height:17px">
+      <div style="position:absolute;inset:3px 0;background:${C.track};border-radius:2px"></div>
+      <div class="growbar" style="position:absolute;left:0;top:3px;bottom:3px;width:${w}%;background:${col};border-radius:2px;animation-delay:${i*45}ms"></div>
+      <div style="position:absolute;left:${gate}%;top:0;bottom:0;width:2px;background:${C.gate}"></div>
+    </div>
+    <div class="pct" style="color:${col}">${d.attain}</div>
+    <div class="fem-cell" style="position:relative;height:14px">
+      <div style="position:absolute;left:0;right:0;top:6px;height:1px;background:${C.edge}"></div>
+      <div style="position:absolute;left:${50/70*100}%;top:1px;bottom:1px;width:1px;background:${C.dim}"></div>
+      <div style="position:absolute;left:calc(${femX}% - 4px);top:2px;width:8px;height:8px;border-radius:50%;background:${femCol}"></div>
+      <div style="position:absolute;right:0;top:-1px;font-family:var(--mono);font-size:9.5px;color:${femCol}">${d.female}%</div>
+    </div>
+    <div class="cpb">${fmt(d.cpb)}</div></div>`;}).join('');
+
+bars('abschart',D.absorption.map(a=>({label:a.code+': '+a.output,v:a.pct,
+  col:a.pct>=60?C.ok:a.pct>=45?C.warn:C.bad,disp:a.pct+'%'})),100,
+  {gate:66.7,lw:'176px',vw:'52px',note:'Gold gate marks 66.7% of the programme period elapsed'});
+
+const cpbs=[...D.districts].sort((a,b)=>b.cpb-a.cpb);
+bars('cpbchart',cpbs.map(d=>({label:d.name,v:d.cpb,
+  col:d.cpb>120000?C.bad:d.cpb>85000?C.warn:C.ok,disp:fmt(d.cpb)})),cpbs[0].cpb,
+  {lw:'82px',vw:'76px',note:'UGX per beneficiary reached, all outputs combined'});
+
+bars('lagchart',D.partners.map(p=>({label:p.name,v:p.lag,
+  col:p.lag<=14?C.ok:p.lag<=25?C.warn:C.bad,disp:p.lag+'d'})),
+  Math.max(...D.partners.map(p=>p.lag)),{lw:'176px',vw:'52px',
+  note:'Average days between report due date and submission'});
+
+(function(){
+ const qs=D.quarters,H=172,maxv=Math.max(...qs.map(q=>Math.max(q.reach,q.target)))*1.12;
+ document.getElementById('qchart').innerHTML=
+  `<div style="display:flex;align-items:flex-end;gap:6px;height:${H}px">
+   ${qs.map(q=>{const h=q.reach/maxv*H;
+     const col=q.reach>=q.target?C.ok:q.reach>=q.target*0.85?C.warn:C.bad;
+     return `<div style="flex:1;position:relative;height:${H}px;display:flex;align-items:flex-end">
+       <div style="width:100%;height:${h}px;background:${col};border-radius:2px 2px 0 0"></div>
+       <div style="position:absolute;left:0;right:0;bottom:${q.target/maxv*H}px;height:2px;background:${C.gate}"></div>
+     </div>`;}).join('')}</div>
+   <div style="display:flex;gap:6px;margin-top:7px">
+   ${qs.map(q=>`<div style="flex:1;font-family:var(--mono);font-size:9px;color:${C.dim};text-align:center;line-height:1.35">${q.short.replace('\\n','<br>')}</div>`).join('')}</div>
+   <div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:${C.dim};margin-top:11px;padding-top:11px;border-top:1px solid ${C.edge}">Gold line is the quarterly target of ${fmt(qs[0].target)} beneficiaries</div>`;
+})();
+
+document.getElementById('indtable').innerHTML=D.indicators.map(r=>{
+ const col=band(r.pct);
+ return `<tr><td style="font-family:var(--mono);font-size:10.5px;color:${C.dim}">${r.code}</td>
+  <td>${r.name}</td><td class="num">${fmt(r.act)}</td>
+  <td class="num" style="color:${C.muted}">${fmt(r.tgt)}</td>
+  <td><div class="barmini"><i style="width:${Math.min(r.pct,100)}%;background:${col}"></i></div></td>
+  <td class="num" style="color:${col};font-weight:600">${r.pct}</td></tr>`;}).join('');
+</script>
