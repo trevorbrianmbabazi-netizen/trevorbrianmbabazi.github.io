@@ -1,0 +1,203 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trevor Brian Mbabazi, Data and Risk Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ground:#F6F7F9;--panel:#FFFFFF;--edge:#E2E7EC;--ink:#16232E;--muted:#5C7183;
+--dim:#8497A5;--ok:#17806A;--warn:#B57812;--bad:#C0392B;
+--shadow:0 1px 2px rgba(22,35,46,.05),0 1px 8px rgba(22,35,46,.04);
+--display:'Bricolage Grotesque',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);
+     -webkit-font-smoothing:antialiased;padding:44px 26px 60px;line-height:1.55}
+.wrap{max-width:940px;margin:0 auto}
+a{color:inherit}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+h1{font-family:var(--display);font-size:clamp(30px,5vw,50px);font-weight:800;
+   letter-spacing:-.03em;line-height:1.02;margin:14px 0 16px;max-width:16ch}
+.lede{font-size:16px;color:var(--muted);max-width:60ch}
+.lede b{color:var(--ink);font-weight:600}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px;font-family:var(--mono);
+      font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+.meta span{border:1px solid var(--edge);background:var(--panel);padding:6px 10px;border-radius:3px;color:var(--muted)}
+.rule{height:1px;background:var(--edge);margin:38px 0}
+h2{font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.18em;
+   text-transform:uppercase;color:var(--dim);margin-bottom:22px}
+.proj{background:var(--panel);border:1px solid var(--edge);border-radius:5px;
+      padding:26px 26px 24px;margin-bottom:20px;box-shadow:var(--shadow)}
+.pnum{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dim);margin-bottom:11px}
+.ptitle{font-family:var(--display);font-size:23px;font-weight:600;letter-spacing:-.02em;line-height:1.15;margin-bottom:8px}
+.pdek{font-size:13.5px;color:var(--muted);margin-bottom:20px;max-width:66ch}
+.block{margin-bottom:15px}
+.blabel{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.btext{font-size:13.5px;max-width:70ch}
+.finding{border-left:2px solid var(--warn);padding:2px 0 2px 14px;margin:14px 0;font-size:14px;line-height:1.5}
+.finding b{color:var(--warn);font-weight:600}
+.stack{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0 20px}
+.stack span{font-family:var(--mono);font-size:10px;letter-spacing:.06em;background:rgba(23,128,106,.07);
+            border:1px solid rgba(23,128,106,.22);color:var(--ok);padding:4px 9px;border-radius:3px}
+.ctas{display:flex;gap:10px;flex-wrap:wrap}
+.cta{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+     border:1px solid var(--ok);background:var(--panel);color:var(--ok);padding:9px 16px;
+     border-radius:3px;text-decoration:none;transition:background .15s}
+.cta:hover,.cta:focus-visible{background:rgba(23,128,106,.08)}
+.cta.sec{border-color:var(--edge);color:var(--muted)}
+.cta.sec:hover{background:rgba(92,113,131,.07)}
+.note{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.05em;
+      margin-top:16px;padding-top:14px;border-top:1px solid var(--edge);line-height:1.7}
+.foot{margin-top:44px;padding-top:22px;border-top:1px solid var(--edge);font-size:13px;color:var(--muted)}
+.foot a{color:var(--ok);text-decoration:none;border-bottom:1px solid rgba(23,128,106,.35)}
+@media(max-width:640px){.proj{padding:20px 18px}}
+</style>
+
+<div class="wrap">
+
+<div class="eyebrow">Kampala, Uganda · UTC+3</div>
+<h1>Trevor Brian Mbabazi</h1>
+<p class="lede">Data analyst with an actuarial background. I work on the problem of
+<b>who owes money, whether they will pay, and what to do about it</b>. Credit risk, collections
+and claims analytics across lending, insurance and public revenue.</p>
+
+<div class="meta">
+  <span>BSc Actuarial Science, Makerere</span>
+  <span>MBA in progress, ESAMI</span>
+  <span>SQL · Python · Power BI</span>
+  <span>Available UTC+3 and US Eastern</span>
+</div>
+
+<div class="rule"></div>
+<h2>Selected work</h2>
+
+<div class="proj">
+  <div class="pnum">01 · CREDIT RISK</div>
+  <div class="ptitle">Where a consumer loan book went wrong, and when</div>
+  <p class="pdek">13,432 loans, UGX 24bn originated across four channels. The board saw an 8.9%
+     default rate and a growing book. Both numbers were hiding the same problem.</p>
+
+  <div class="block"><div class="blabel">The question</div>
+    <div class="btext">Portfolio default was rising but originations were growing, so ratios looked
+    stable on a trailing basis. Is this a collections problem or an underwriting problem?</div></div>
+
+  <div class="block"><div class="blabel">Approach</div>
+    <div class="btext">Vintage analysis, grouping loans by origination cohort and tracking cumulative
+    default against months on book so each cohort is compared at the same age rather than the same
+    calendar date. Then channel decomposition, early payment default isolation, and a risk versus
+    price check by score band.</div></div>
+
+  <div class="finding"><b>Underwriting, not collections.</b> The July to December 2025 cohorts default
+    5 to 8 points higher than every prior cohort at the same age. The damage was locked in at
+    origination during a growth push that dropped mean credit score by 42 points.</div>
+
+  <div class="finding"><b>One channel carries it.</b> The agent network writes at 58 points lower
+    score and defaults at 13.9% against roughly 6 to 7% elsewhere, on a third of the book. Nearly
+    half its defaults occur within three months, which points at origination quality or fraud rather
+    than borrower affordability.</div>
+
+  <div class="finding"><b>Subprime is underpriced.</b> It carries 4.8 times the default rate of prime
+    but only 1.7 times the price, so the band is written below its risk adjusted cost.</div>
+
+  <div class="stack"><span>Python</span><span>pandas</span><span>Vintage analysis</span>
+    <span>PAR30 / PAR90</span><span>Roll rates</span><span>Cohort segmentation</span></div>
+
+  <div class="ctas">
+    <a class="cta" href="portfolio-credit-risk.html">View dashboard</a>
+    <a class="cta sec" href="loan_book.csv">Dataset</a>
+  </div>
+  <div class="note">Synthetic data. Fictional lender, no real institution, borrower or loan represented.</div>
+</div>
+
+<div class="proj">
+  <div class="pnum">02 · INSURANCE</div>
+  <div class="ptitle">A motor book losing money for nine months before anyone noticed</div>
+  <p class="pdek">5,283 claims across six product lines and four regions, 18 months of experience.
+     Portfolio loss ratio 64%, comfortably profitable and completely misleading.</p>
+
+  <div class="block"><div class="blabel">The question</div>
+    <div class="btext">Which product lines and regions are actually carrying the book, and which are
+    being subsidised by the others?</div></div>
+
+  <div class="block"><div class="blabel">Approach</div>
+    <div class="btext">Cleaned 5,325 raw claim records: de-duplication, product name standardisation,
+    region imputation from branch, and large loss capping decisions documented rather than applied
+    silently. Then loss ratio decomposition by product, region and month against earned premium,
+    plus frequency and severity separation and scheme level experience rating.</div></div>
+
+  <div class="finding"><b>Motor Comprehensive in Central climbed from 70% to 127% loss ratio</b>
+    over 18 months while pricing stayed flat. It was underwritten at the same rate for a year and a
+    half while the claims moved underneath it.</div>
+
+  <div class="finding"><b>Vehicle theft was the mechanism.</b> It made up 14% of motor claims before
+    September 2025 and 40% after, and theft claims settle far larger than collision.</div>
+
+  <div class="finding"><b>One medical scheme runs at double the book average severity</b> across 435
+    claims. That is a renewal pricing conversation with a number attached to it.</div>
+
+  <div class="stack"><span>Excel</span><span>Power BI</span><span>Loss ratio analysis</span>
+    <span>Frequency and severity</span><span>Experience rating</span><span>Data cleaning</span></div>
+
+  <div class="ctas">
+    <a class="cta" href="portfolio-claims.html">View dashboard</a>
+    <a class="cta sec" href="acacia-claims-dataset.xlsx">Dataset</a>
+  </div>
+  <div class="note">Synthetic data. Fictional insurer, no real company, scheme or policy represented.</div>
+</div>
+
+<div class="proj">
+  <div class="pnum">03 · PROGRAMME PERFORMANCE</div>
+  <div class="ptitle">What an 88% attainment figure was concealing</div>
+  <p class="pdek">4,286 activity records across eight districts and four delivery partners, eight
+     quarters of a multi year programme. The quarterly report said 88.5%. That was true and useless.</p>
+
+  <div class="block"><div class="blabel">The question</div>
+    <div class="btext">Two thirds of the programme period has elapsed. Is delivery on track, and if
+    not, where specifically is it failing?</div></div>
+
+  <div class="block"><div class="blabel">Approach</div>
+    <div class="btext">Attainment measured per district against target rather than in aggregate,
+    budget absorption benchmarked against time elapsed rather than against budget alone, and
+    reporting lag measured per partner to expose data quality risk.</div></div>
+
+  <div class="finding"><b>The average hid two failing districts.</b> One delivered 41% of target and
+    another 71%, while the remaining six sat above 92%. Those same two districts were the only ones
+    below 40% female participation and carried the highest cost per beneficiary.</div>
+
+  <div class="finding"><b>One output will close with half its money unspent</b>, at 34% absorbed
+    against 66.7% of the period elapsed.</div>
+
+  <div class="finding"><b>One partner reports 38 days late</b> against roughly a week for the other
+    three, delaying every downstream verification cycle.</div>
+
+  <div class="stack"><span>Python</span><span>Results frameworks</span><span>Variance analysis</span>
+    <span>Budget absorption</span><span>Disaggregation</span></div>
+
+  <div class="ctas">
+    <a class="cta" href="nsimbi-me-dashboard.html">View dashboard</a>
+    <a class="cta sec" href="nsimbi-me-dataset.xlsx">Dataset</a>
+  </div>
+  <div class="note">Synthetic data. Fictional programme, no real organisation, district or beneficiary represented.</div>
+</div>
+
+<div class="rule"></div>
+<h2>Background</h2>
+<div class="proj" style="margin-bottom:0">
+  <div class="btext" style="max-width:72ch">
+    I currently run revenue and collections analytics for a city authority, covering arrears, aging
+    and recovery across roughly 37,000 transaction records. Before that I worked in insurance
+    analytics, modelling policyholder lapse and retention to support pricing and reserving.
+    <br><br>
+    Credit performance and repayment behaviour are the same problem in different clothes, which is
+    why the three projects above sit together. All of them use synthetic data I generated myself,
+    because client and employer data is not mine to publish. The methods, the code and the judgement
+    calls are the real work.
+  </div>
+</div>
+
+<div class="foot">
+  <a href="mailto:trevorbrianmbabazi@gmail.com">trevorbrianmbabazi@gmail.com</a> ·
+  <a href="https://www.linkedin.com/in/trevor-brian-mbabazi/">LinkedIn</a> ·
+  +256 700 354 049 · Kampala, UTC+3
+</div>
+
+</div>
